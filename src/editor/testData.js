@@ -43,7 +43,7 @@ export default [
                     children: [
                       {
                         tag: "v-text",
-                        props: { content: "菜单" },
+                        props: { content: "菜单", tag: "span" },
                         id: "PMT7QiD2gl"
                       }
                     ]
@@ -84,7 +84,7 @@ export default [
                 children: [
                   {
                     tag: "v-text",
-                    props: { content: "菜单" },
+                    props: { content: "菜单", tag: "span" },
                     id: "9U7mKhePMY"
                   }
                 ]
@@ -96,7 +96,7 @@ export default [
                 children: [
                   {
                     tag: "v-text",
-                    props: { content: "home" },
+                    props: { content: "home", tag: "span" },
                     id: "aRqj-yaQOd"
                   }
                 ]
@@ -108,7 +108,7 @@ export default [
                 children: [
                   {
                     tag: "v-text",
-                    props: { content: "菜单" },
+                    props: { content: "菜单", tag: "span" },
                     id: "Gj1IpZWtJc"
                   }
                 ]
@@ -120,7 +120,7 @@ export default [
                 children: [
                   {
                     tag: "v-text",
-                    props: { content: "菜单" },
+                    props: { content: "菜单", tag: "span" },
                     id: "9gYLX_jtrG"
                   }
                 ]
@@ -183,29 +183,6 @@ export default [
             id: "UDoH0jZ_u",
             children: [
               {
-                tag: "v-breadcrumb",
-                props: { separator: "/" },
-                id: "-pZBmNPP6Q",
-                children: [
-                  {
-                    tag: "a-icon",
-                    props: { type: "home", theme: "filled", spin: false },
-                    id: "3xHxNX0kZ"
-                  },
-                  {
-                    tag: "v-text",
-                    props: { content: "面包屑", tag: "span" },
-                    id: "9RD9-hEL_"
-                  },
-                  {
-                    tag: "v-text",
-                    props: { content: "文字", tag: "span" },
-                    id: "vXLAJXLSA"
-                  }
-                ],
-                style: { margin: "10px" }
-              },
-              {
                 tag: "a-page-header",
                 props: {
                   ghost: false,
@@ -214,6 +191,50 @@ export default [
                 },
                 id: "HkL_TLIJI",
                 children: [
+                  {
+                    tag: "a-breadcrumb",
+                    props: {},
+                    id: "9MNAHGMoGV",
+                    children: [
+                      {
+                        tag: "a-breadcrumb-item",
+                        props: {},
+                        id: "VEj9rcP-5A",
+                        children: [
+                          {
+                            tag: "a-icon",
+                            props: { type: "home" },
+                            id: "vWodUEeTR"
+                          }
+                        ]
+                      },
+                      {
+                        tag: "a-breadcrumb-item",
+                        props: {},
+                        id: "QhygDrq7DK",
+                        children: [
+                          {
+                            tag: "v-text",
+                            props: { content: "页面", tag: "span" },
+                            id: "L9L11dUykC"
+                          }
+                        ]
+                      },
+                      {
+                        tag: "a-breadcrumb-item",
+                        props: {},
+                        id: "zzlQf3rHYM",
+                        children: [
+                          {
+                            tag: "v-text",
+                            props: { content: "页面", tag: "span" },
+                            id: "h0YAGRwaeh"
+                          }
+                        ]
+                      }
+                    ],
+                    style: { "margin-bottom": "20px" }
+                  },
                   {
                     tag: "a-alert",
                     props: {
@@ -277,7 +298,8 @@ export default [
                             tag: "v-text",
                             props: {
                               content:
-                                "<p>Create a services site</p><p>2015-09-01</p>"
+                                "<p>Create a services site</p><p>2015-09-01</p>",
+                              tag: "span"
                             },
                             id: "LP4NumlGn"
                           }
@@ -310,7 +332,8 @@ export default [
                             tag: "v-text",
                             props: {
                               content:
-                                "<p>Create a services site</p><p>2015-09-01</p>"
+                                "<p>Create a services site</p><p>2015-09-01</p>",
+                              tag: "span"
                             },
                             id: "PMhQLHW4nC"
                           }
@@ -318,31 +341,6 @@ export default [
                       }
                     ],
                     style: { width: "400px" }
-                  },
-                  {
-                    tag: "v-tab",
-                    props: { titles: [] },
-                    id: "X10WNzXZW2",
-                    children: [
-                      {
-                        tag: "v-text",
-                        props: { content: "Tab1 content" },
-                        id: "eXW-HpIxY",
-                        style: {
-                          border: "3px solid rgba(94, 109, 124, 0.95)",
-                          width: "129px",
-                          height: "100px",
-                          "border-bottom": "",
-                          "border-top": "solid rgba(11, 78, 25, 0.28)"
-                        }
-                      },
-                      {
-                        tag: "v-text",
-                        props: { content: "文字", tag: "span" },
-                        id: "DGmrP2WsX",
-                        style: { color: "rgba(88, 68, 68, 1)" }
-                      }
-                    ]
                   },
                   {
                     tag: "a-progress",
@@ -364,6 +362,37 @@ export default [
                     },
                     id: "igV5XD4to",
                     style: { "margin-top": "30px" }
+                  },
+                  {
+                    tag: "a-tabs",
+                    props: {},
+                    id: "12tWLtjJIz",
+                    children: [
+                      {
+                        tag: "a-tab-pane",
+                        props: { tab: "tab" },
+                        id: "FWjtxd9_4n",
+                        children: [
+                          {
+                            tag: "v-text",
+                            props: { content: "Tab content", tag: "span" },
+                            id: "z4gYJpHAj"
+                          }
+                        ]
+                      },
+                      {
+                        tag: "a-tab-pane",
+                        props: { tab: "tab2" },
+                        id: "9l7Zx2YR1",
+                        children: [
+                          {
+                            tag: "v-text",
+                            props: { content: "Tab content", tag: "span" },
+                            id: "0pvTJFDG-E"
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               },

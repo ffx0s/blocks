@@ -1,11 +1,13 @@
 import Vue from "vue";
-import { isParentComponent, componentsMap } from "@/editor/components";
-import { isNumber, deepCopy } from "@/utils/shared";
+import shortid from "shortid";
 import editor from "@/editor";
 import testData from "@/editor/testData";
+import { message } from "ant-design-vue";
+import { create, isParentComponent, componentsMap } from "@/editor/components";
+import { isNumber, deepCopy } from "@/utils/shared";
 import { Drop, Add, Remove, Move } from "@/editor/actions";
-import shortid from "shortid";
 
+// 遍历某个父组件下的所有子孙组件
 function loopComponent(component, callback) {
   if (isParentComponent(component.tag)) {
     const children = component.children;
@@ -60,6 +62,23 @@ function getChildrenById(state, id) {
 }
 
 function initTreeState(tree = []) {
+  function valid(component) {
+    return !!componentsMap[component.tag];
+  }
+
+  function filterComponent(component) {
+    const isValid = valid(component);
+
+    if (isValid && component.children) {
+      component.children = component.children.filter(filterComponent);
+    }
+
+    return isValid;
+  }
+
+  // 过滤组件，排除无效的组件数据
+  tree = tree.filter(filterComponent);
+
   // 以 id 为 key，值为组件数据对象的引用
   const treeMap = {};
 
@@ -77,6 +96,37 @@ function initTreeState(tree = []) {
     tree,
     treeMap
   };
+}
+
+/**
+ * 判断子组件在父组件里是否无效，如：（a-tabs > a-button 无效，a-tabs > a-tab-pane 有效）
+ * @param {String} parentTag 父组件 tag
+ * @param {String} childTag 子组件 tag
+ */
+function isWrongChildren(parentTag, childTag) {
+  const parentTags =
+    componentsMap[childTag] && componentsMap[childTag].parentComponent;
+  const childTags =
+    componentsMap[parentTag] && componentsMap[parentTag].childrenComponent;
+
+  if (parentTags && parentTags.length) {
+    return {
+      parentTags,
+      error:
+        parentTags.indexOf(parentTag) < 0
+          ? `${childTag} 只能添加到 ${parentTags.join("、")} 组件里`
+          : ""
+    };
+  } else if (childTags && childTags.length) {
+    return {
+      childTags,
+      error:
+        childTags.indexOf(childTag) < 0
+          ? `仅允许添加 ${childTags.join("、")} 组件到 ${parentTag}`
+          : ""
+    };
+  }
+  return {};
 }
 
 const state = () =>
@@ -125,6 +175,19 @@ const mutations = {
   },
   // 添加组件
   add(state, { parentId, index, component, record = true }) {
+    const parentComponent = parentId ? state.treeMap[parentId] : {};
+    const { error, parentTags, childTags } = isWrongChildren(
+      parentComponent.tag,
+      component.tag
+    );
+
+    if (error && parentTags) {
+      message.error(error, 4);
+      return;
+    } else if (childTags) {
+      component = create(childTags[0], {}, [component]);
+    }
+
     if (record) {
       editor.history.push(
         new Add({
@@ -152,6 +215,13 @@ const mutations = {
     if (moveChildren === children) return;
 
     const component = state.treeMap[id];
+    const parentTag = parentId ? state.treeMap[parentId].tag : "";
+    const { error } = isWrongChildren(parentTag, component.tag);
+
+    if (error) {
+      message.error(error, 4);
+      return;
+    }
 
     if (record) {
       editor.history.push(
@@ -215,31 +285,50 @@ const mutations = {
     const [dropObj, dropParent] = getTarget(dropPos);
     const dragIndex = +dragPos[dragPos.length - 1];
     const dropIndex = +dropPos[dropPos.length - 1];
+    let errorMessage = "";
+    const check = (parentTag, childTag) => {
+      const { error } = isWrongChildren(parentTag, childTag);
+      if (error) {
+        errorMessage = error;
+        message.error(error, 4);
+        return false;
+      }
+      return true;
+    };
 
     if (dropPosition === 0) {
-      if (isParentComponent(dropObj.tag)) {
+      // 添加到目标内部
+      if (isParentComponent(dropObj.tag) && check(dropObj.tag, dragObj.tag)) {
         getChildren(dragParent).splice(dragIndex, 1);
         dropObj.children.push(dragObj);
       }
     } else if (dropPosition === -1) {
-      getChildren(dragParent).splice(dragIndex, 1);
-      getChildren(dropParent).splice(dropIndex, 0, dragObj);
+      // 添加到目标上方
+      if (check(dropParent.tag, dragObj.tag)) {
+        getChildren(dragParent).splice(dragIndex, 1);
+        getChildren(dropParent).splice(dropIndex, 0, dragObj);
+      }
     } else {
-      getChildren(dragParent).splice(dragIndex, 1);
-      getChildren(dropParent).splice(dropIndex + 1, 0, dragObj);
+      // 添加到目标下方
+      if (check(dropParent.tag, dragObj.tag)) {
+        getChildren(dragParent).splice(dragIndex, 1);
+        getChildren(dropParent).splice(dropIndex + 1, 0, dragObj);
+      }
     }
 
-    editor.history.push(
-      new Drop({
-        dropIndex,
-        dropPosition,
-        dropId: dropObj.id,
-        dropParentId: dropParent.id,
-        dragIndex,
-        dragId: dragObj.id,
-        dragParentId: dragParent.id
-      })
-    );
+    if (!errorMessage) {
+      editor.history.push(
+        new Drop({
+          dropIndex,
+          dropPosition,
+          dropId: dropObj.id,
+          dropParentId: dropParent.id,
+          dragIndex,
+          dragId: dragObj.id,
+          dragParentId: dragParent.id
+        })
+      );
+    }
   },
   dropUndo(
     state,

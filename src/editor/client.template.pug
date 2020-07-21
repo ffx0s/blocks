@@ -23,8 +23,11 @@
         function renderChildren(component) {
           if (component.children) {
             return component.children.map(child => {
+              if (child.props.key && !child.key) {
+                child.key = child.props.key;
+              }
               return h(child.tag, child, renderChildren(child))
-            })
+            });
           }
           return []
         }
