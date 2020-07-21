@@ -3,6 +3,10 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Antd, { Icon } from "ant-design-vue";
+
+import "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+
 import "@/lib";
 
 Vue.use(Antd);
