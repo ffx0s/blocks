@@ -45,6 +45,9 @@ export default {
         {children}
       </component.tag>
     );
+  },
+  renderError(h, err) {
+    return h("pre", { style: { color: "red" } }, err.stack);
   }
 };
 </script>

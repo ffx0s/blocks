@@ -63,8 +63,6 @@ export default {
         this.$store.commit("editor/setCreateParentId", "");
         this.$store.commit("editor/setTabActiveKey", "tree");
       }
-
-      this.$message.success("添加成功");
     },
     dragstart(event, tag) {
       event.dataTransfer.setData("tag", tag);
