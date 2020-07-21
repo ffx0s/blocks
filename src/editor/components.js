@@ -1,5 +1,6 @@
 import shortid from "shortid";
 import store from "@/store";
+import { deepCopy } from "@/utils/shared";
 
 // 创建组件数据对象
 export function create(tag, componentProps, childrenComponent) {
@@ -92,6 +93,7 @@ export const components = [
     tag: "a-menu",
     name: "导航菜单",
     type: "parent",
+    childrenComponent: ["a-menu-item", "a-sub-menu"],
     props: [
       {
         name: "mode",
@@ -135,7 +137,7 @@ export const components = [
     tag: "a-menu-item",
     name: "导航菜单项",
     type: "parent",
-    wrap: false,
+    parentComponent: ["a-menu", "a-sub-menu"],
     props: [
       { name: "disabled", component: "ASwitch", initialValue: false },
       {
@@ -157,7 +159,8 @@ export const components = [
     tag: "a-sub-menu",
     name: "子菜单",
     type: "parent",
-    wrap: false,
+    parentComponent: ["a-menu"],
+    childrenComponent: ["a-menu-item"],
     props: [
       {
         name: "title",
@@ -241,17 +244,36 @@ export const components = [
     }
   },
   {
-    tag: "v-breadcrumb",
+    tag: "a-breadcrumb",
     name: "面包屑",
     type: "parent",
+    childrenComponent: ["a-breadcrumb-item"],
     props: [{ name: "separator", component: "AInput", initialValue: "/" }],
     init(
       props = {},
       children = [
-        create("a-icon", { type: "home" }),
-        create("v-text", { tag: "span", content: "页面1" }),
-        create("v-text", { tag: "span", content: "页面2" })
+        create("a-breadcrumb-item", {}, [create("a-icon", { type: "home" })]),
+        create("a-breadcrumb-item"),
+        create("a-breadcrumb-item")
       ]
+    ) {
+      return {
+        props: {
+          ...props
+        },
+        children
+      };
+    }
+  },
+  {
+    tag: "a-breadcrumb-item",
+    name: "面包屑子项",
+    type: "parent",
+    parentComponent: ["a-breadcrumb"],
+    props: [],
+    init(
+      props = {},
+      children = [create("v-text", { tag: "span", content: "页面" })]
     ) {
       return {
         props: {
@@ -307,6 +329,14 @@ export const components = [
           ...props
         }
       };
+    },
+    parse({ props, style }) {
+      const styleData = parseStyle(style);
+      const text = props.text;
+      props = deepCopy(props);
+      delete props.text;
+      const propsData = parseProps(props);
+      return `<a-button ${propsData} ${styleData}>${text}</a-button>`;
     }
   },
   {
@@ -338,14 +368,18 @@ export const components = [
           ...props
         }
       };
+    },
+    parse({ props, style }) {
+      const styleData = parseStyle(style);
+      return `<${props.tag} ${styleData}>${props.content}</${props.tag}>`;
     }
   },
   {
-    tag: "v-tab",
+    tag: "a-tabs",
     name: "选项卡",
     type: "parent",
+    childrenComponent: ["a-tab-pane"],
     props: [
-      { name: "titles", component: "InputStringArray" },
       { name: "animated", component: "ASwitch", initialValue: true },
       {
         name: "size",
@@ -373,13 +407,29 @@ export const components = [
       },
       { name: "tabBarGutter", component: "AInputNumber" }
     ],
+    init(props = {}, children = [create("a-tab-pane")]) {
+      return {
+        props: {
+          ...props
+        },
+        children
+      };
+    }
+  },
+  {
+    tag: "a-tab-pane",
+    name: "选项卡子项",
+    type: "parent",
+    parentComponent: ["a-tabs"],
+    props: [{ name: "tab", component: "AInput" }],
     init(
       props = {},
-      children = [create("v-text", { content: "Tab1 content" })]
+      children = [create("v-text", { content: "Tab content" })]
     ) {
       return {
         props: {
-          titles: [],
+          tab: "tab",
+          key: shortid.generate(),
           ...props
         },
         children
@@ -600,6 +650,7 @@ export const components = [
     tag: "a-steps",
     name: "步骤条",
     type: "parent",
+    childrenComponent: ["a-step"],
     props: [
       {
         name: "type",
@@ -664,7 +715,7 @@ export const components = [
     tag: "a-step",
     name: "步骤条子项",
     type: "single",
-    wrap: false,
+    parentComponent: ["a-steps"],
     props: [
       { name: "description", component: "AInput" },
       { name: "title", component: "AInput" },
@@ -684,6 +735,7 @@ export const components = [
     tag: "a-timeline",
     name: "时间轴",
     type: "parent",
+    childrenComponent: ["a-timeline-item"],
     props: [
       { name: "pending", component: "AInput" },
       { name: "reverse", component: "ASwitch" },
@@ -712,6 +764,7 @@ export const components = [
     tag: "a-timeline-item",
     name: "时间轴子项",
     type: "parent",
+    parentComponent: ["a-timeline"],
     props: [
       {
         name: "color",
@@ -791,11 +844,35 @@ export const components = [
   // }
 ];
 
-export const componentsMap = {};
+export const componentsMap = (function() {
+  const map = {};
+  components.forEach(component => {
+    map[component.tag] = component;
+  });
+  return map;
+})();
 
-components.forEach(component => {
-  componentsMap[component.tag] = component;
-});
+export const COMPONENT_ID_PROP = "data-component-id";
+export const COMPONENT_TYPE_PROP = "data-component-type";
+
+export function getComponentEl(id) {
+  return document.querySelector(`[${COMPONENT_ID_PROP}='${id}']`);
+}
+
+export function getComponentId(el) {
+  return el.getAttribute && el.getAttribute(COMPONENT_ID_PROP);
+}
+
+export function getComponentType(el) {
+  return el.getAttribute && el.getAttribute(COMPONENT_TYPE_PROP);
+}
+
+export function getComponentData(el) {
+  const id = getComponentId(el);
+  if (id) {
+    return store.state.component.treeMap[id];
+  }
+}
 
 export function isParentComponent(tag) {
   return componentsMap[tag] && componentsMap[tag].type === "parent";
@@ -806,24 +883,54 @@ export function isSingleComponent(tag) {
 }
 
 export function noWrap(tag) {
-  return componentsMap[tag] && componentsMap[tag].wrap === false;
+  return (
+    componentsMap[tag] &&
+    componentsMap[tag].parentComponent &&
+    componentsMap[tag].parentComponent.length
+  );
 }
 
-export const COMPONENT_ID_PROP = "data-component-id";
-export const COMPONENT_TYPE_PROP = "data-component-type";
+function parseStyle(style = {}) {
+  const styleString = JSON.stringify(style);
+  const styleData = styleString === "{}" ? "" : `:style='${styleString}'`;
+  return styleData;
+}
 
-export const getComponentEl = id =>
-  document.querySelector(`[${COMPONENT_ID_PROP}='${id}']`);
+function parseProps(props = {}) {
+  const propsData = Object.keys(props)
+    .map(key => {
+      let value = props[key];
+      let prefix = "";
+      let symbol = '"';
+      if (typeof value !== "string") {
+        prefix = ":";
+        if (typeof value === "object") {
+          value = JSON.stringify(value);
+          symbol = "'";
+        }
+      }
+      return `${prefix}${key}=${symbol}${value}${symbol}`;
+    })
+    .join(" ");
 
-export const getComponentId = el =>
-  el.getAttribute && el.getAttribute(COMPONENT_ID_PROP);
+  return propsData;
+}
 
-export const getComponentType = el =>
-  el.getAttribute && el.getAttribute(COMPONENT_TYPE_PROP);
+export function parseComponent(component) {
+  const { children, tag, props, style } = component;
 
-export const getComponentData = el => {
-  const id = getComponentId(el);
-  if (id) {
-    return store.state.component.treeMap[id];
+  if (componentsMap[tag].parse) {
+    return componentsMap[tag].parse(component);
   }
-};
+
+  let content = "";
+
+  if (children) {
+    content = children.map(parseComponent).join("");
+  }
+
+  const propsData = parseProps(props);
+  const styleData = parseStyle(style);
+
+  return `<${tag} ${propsData} ${styleData}>${content}</${tag}>`;
+}

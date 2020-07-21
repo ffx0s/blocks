@@ -1,6 +1,8 @@
 import History from "./history";
 import shortcuts from "./shortcuts";
 import store from "@/store";
+import { parseComponent } from "./components";
+import { html_beautify } from "js-beautify";
 
 const template = require("pug-loader!./client.template.pug");
 
@@ -86,6 +88,15 @@ class Editor {
       }
     };
     reader.readAsText(file);
+  }
+  toCode() {
+    const html = store.state.component.tree.map(parseComponent).join("");
+    const code = html_beautify(`<template>${html}</template>`, {
+      indent_size: 2,
+      wrap_line_length: 100
+    });
+
+    return code;
   }
 }
 

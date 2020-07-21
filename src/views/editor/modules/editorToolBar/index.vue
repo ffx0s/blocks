@@ -25,6 +25,9 @@
       <a-tooltip title="清空画布" placement="bottom">
         <a-button icon="delete" @click="cleanCanvas" />
       </a-tooltip>
+      <a-tooltip title="源码" placement="bottom">
+        <a-button icon="code" @click="showCode" />
+      </a-tooltip>
       <a-tooltip title="下载" placement="bottom">
         <a-button icon="arrow-down" @click="download" />
       </a-tooltip>
@@ -38,6 +41,27 @@
           />
         </a-button>
       </a-tooltip>
+
+      <a-modal
+        centered
+        :width="820"
+        v-model="showCodeModal"
+        title=""
+        @cancel="cancelCodeModal"
+      >
+        <div slot="closeIcon"></div>
+        <div :class="$style.code">
+          <pre class="language-html"><code v-html="code" /></pre>
+        </div>
+        <div slot="footer">
+          <a-button @click="cancelCodeModal">关闭</a-button>
+          <a-button v-if="copyError" type="error">失败</a-button>
+          <a-button v-else-if="copySuccess" type="success">
+            <a-icon type="check" :style="{ color: '#52c41a' }" />已复制
+          </a-button>
+          <a-button v-else type="primary" @click="copyCode">复制</a-button>
+        </div>
+      </a-modal>
     </div>
   </transition>
 </template>
@@ -45,6 +69,8 @@
 <script>
 import { mapState } from "vuex";
 import editor from "@/editor";
+import Prism from "prismjs";
+import { copy } from "@/utils/shared";
 
 export default {
   computed: {
@@ -52,6 +78,14 @@ export default {
     isEdit() {
       return this.$store.getters["editor/isEdit"];
     }
+  },
+  data() {
+    return {
+      code: "",
+      showCodeModal: false,
+      copyError: false,
+      copySuccess: false
+    };
   },
   methods: {
     preview() {
@@ -74,6 +108,29 @@ export default {
         }
       });
     },
+    showCode() {
+      this._code = editor.toCode();
+      this.code = Prism.highlight(this._code, Prism.languages.html, "html");
+
+      this.showCodeModal = true;
+    },
+    copyCode() {
+      const errMessage = copy(this._code);
+      if (errMessage) {
+        this.copyError = true;
+      } else {
+        this.copyError = false;
+        this.copySuccess = true;
+      }
+      clearTimeout(this.copyTimer);
+      this.copyTimer = setTimeout(() => {
+        this.copyError = false;
+        this.copySuccess = false;
+      }, 3000);
+    },
+    cancelCodeModal() {
+      this.showCodeModal = false;
+    },
     download() {
       if (!this.$store.state.component.tree.length) {
         this.$message.warning("你还没有添加组件");
@@ -84,7 +141,7 @@ export default {
     onChange(event) {
       editor.import(event, (errorMessage, data) => {
         if (errorMessage) {
-          this.$message.error(errorMessage);
+          this.$message.error(errorMessage, 1);
         } else {
           this.$store.commit("component/setComponents", data);
         }
@@ -130,5 +187,10 @@ export default {
   height: 32px;
   font-size: 0;
   cursor: pointer;
+}
+
+.code {
+  max-height: 70vh;
+  overflow: auto;
 }
 </style>
