@@ -67,7 +67,7 @@ export function copy(text) {
       errMessage = "";
     }
   } catch (err) {
-    console.error("Fallback: Oops, unable to copy", err);
+    // console.error("Fallback: Oops, unable to copy", err);
   }
 
   document.body.removeChild(textArea);
