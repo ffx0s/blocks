@@ -14,17 +14,23 @@
         @dragend="dragend"
       >
         <div>{{ item.name }}</div>
-        <div style="font-size: 12px;color:rgba(0, 0, 0, 0.45);">
+        <div :class="$style.tagName">
           {{ item.tag }}
         </div>
       </a-card-grid>
     </a-card>
+    <a-empty
+      v-if="!filterComponents.length"
+      :image="emptyImage"
+      description="无对应的组件"
+    />
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import { components, create } from "@/editor/components";
+import { Empty } from "ant-design-vue";
 
 export default {
   data() {
@@ -32,7 +38,8 @@ export default {
       searchValue: "",
       components: components.map(({ tag, name }) => {
         return { tag, name };
-      })
+      }),
+      emptyImage: Empty.PRESENTED_IMAGE_SIMPLE
     };
   },
   computed: {
@@ -61,7 +68,7 @@ export default {
 
       if (this.parentId) {
         this.$store.commit("editor/setCreateParentId", "");
-        this.$store.commit("editor/setTabActiveKey", "tree");
+        this.$store.commit("editor/setLeftTabActiveKey", "tree");
       }
     },
     dragstart(event, tag) {
@@ -81,7 +88,7 @@ export default {
 }
 .items {
   position: relative;
-  width: 50%;
+  width: 100%;
   text-align: center;
   padding: 5px;
   cursor: pointer;
@@ -89,5 +96,12 @@ export default {
 }
 .items.avtive {
   background-color: #f0f2f5;
+}
+.tagName {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
 }
 </style>

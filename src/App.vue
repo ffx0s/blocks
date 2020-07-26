@@ -14,7 +14,9 @@ body {
 .v-slide-top-enter-active,
 .v-slide-top-leave-active,
 .v-slide-right-enter-active,
-.v-slide-right-leave-active {
+.v-slide-right-leave-active,
+.v-slide-left-enter-active,
+.v-slide-left-leave-active {
   transition: opacity 0.3s, transform 0.3s;
 }
 
@@ -34,5 +36,11 @@ body {
 .v-slide-top-leave-to {
   opacity: 0;
   transform: translateY(-100%);
+}
+
+.v-slide-left-enter,
+.v-slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
 }
 </style>

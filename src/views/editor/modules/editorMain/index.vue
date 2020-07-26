@@ -8,6 +8,8 @@
     :minHeight="minHeight"
     :parent="true"
     :dragHandle="'.' + $style.dragHandle"
+    :styleObj="styleObj"
+    @resize="handleResize"
   >
     <!-- 头部 -->
     <CanvasHeader :class="$style.dragHandle" />
@@ -31,7 +33,7 @@
       <a-empty
         :class="$style.empty"
         :image="emptyImage"
-        description="空空如也，可通过右侧拖拽组件添加"
+        description="空空如也，可通过左侧拖拽组件添加"
       />
       <SelectedLayer />
     </div>
@@ -44,7 +46,7 @@ import CanvasHeader from "./CanvasHeader";
 import DraggableResizable from "@/components/dragResizable";
 import ComponentItem from "@/components/componentItem";
 import { create, getComponentType, getComponentId } from "@/editor/components";
-import { Empty } from "ant-design-vue";
+import { Empty, Modal } from "ant-design-vue";
 import { mapState, mapGetters } from "vuex";
 import store from "@/store";
 import editor from "@/editor";
@@ -61,8 +63,30 @@ export default {
     ...mapState("editor", ["position"]),
     ...mapGetters("editor", ["isPreview", "isEmpty"])
   },
+  watch: {
+    isPreview(isPreview) {
+      if (isPreview) {
+        const { canvasInitX, canvasInitY } = editor;
+        const x = canvasInitX + this.position.x;
+        const y = canvasInitY + this.position.y;
+
+        this.styleObj = {
+          position: "fixed",
+          left: x + "px",
+          top: y + "px",
+          transform: null
+        };
+
+        setTimeout(() => {
+          this.styleObj = {};
+          this.$store.commit("editor/setPosition", { x: x - 10, y: y - 10 });
+        }, 500);
+      }
+    }
+  },
   data() {
     return {
+      styleObj: {},
       minWidth: 320,
       minHeight: 200,
       emptyImage: Empty.PRESENTED_IMAGE_SIMPLE
@@ -71,10 +95,7 @@ export default {
   mounted() {
     window.addEventListener("beforeunload", this.setLocalData);
 
-    const toolsHeight = 32;
-    const margin = 10;
-
-    editor.setCanvas(this.$refs.canvas, margin, margin + toolsHeight);
+    editor.setCanvas(this.$refs.canvas);
 
     // 监听撤销、恢复记录的操作
     editor.history.on("input", history => {
@@ -84,6 +105,14 @@ export default {
         history.disableRedo
       ]);
     });
+
+    // 不支持 ResizeObserver 的浏览器需要手动触发一次 resize 事件
+    if (!window.ResizeObserver) {
+      window.dispatchEvent(new Event("resize"));
+      Modal.info({
+        content: "为了有更好的体验，请使用最新版 Chrome 浏览器打开。"
+      });
+    }
   },
   beforeDestroy() {
     window.removeEventListener("beforeunload", this.setLocalData);
@@ -158,6 +187,13 @@ export default {
         });
       }
       this.$store.commit("editor/setCreateParentId", "");
+    },
+    handleResize({ target }) {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = setTimeout(() => {
+        editor.canvasInitX = target.offsetLeft;
+        editor.canvasInitY = target.offsetTop;
+      }, 200);
     }
   }
 };

@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import { isNumber } from "@/utils/shared";
+
 function getElementPosition(el) {
   const rect = el.getBoundingClientRect();
   return {
@@ -122,9 +124,7 @@ const handleActions = {
 };
 
 function setValue(max, min, obj, prop) {
-  if (max !== undefined) {
-    obj[prop] = Math.max(Math.min(max, obj[prop]), min);
-  }
+  obj[prop] = Math.max(Math.min(max, obj[prop]), min);
 }
 
 export default {
@@ -179,12 +179,16 @@ export default {
       default: 0
     },
     maxWidth: {
-      type: [Number, null],
-      default: null
+      type: Number,
+      default: Infinity
     },
     maxHeight: {
-      type: [Number, null],
-      default: null
+      type: Number,
+      default: Infinity
+    },
+    styleObj: {
+      type: Object,
+      default: () => ({})
     }
   },
   computed: {
@@ -194,7 +198,8 @@ export default {
         width: w + "px",
         height: h + "px",
         transform: `translate(${x}px, ${y}px)`,
-        userSelect: this.dragging || this.resizing ? "none" : "auto"
+        userSelect: this.dragging || this.resizing ? "none" : "auto",
+        ...this.styleObj
       };
     }
   },
@@ -240,6 +245,7 @@ export default {
             const { width, height } = entries[0].contentRect;
             this.parentPosition = { w: width, h: height };
             this.check();
+            this.$emit("resize", entries[0]);
           }
         });
 
@@ -247,6 +253,31 @@ export default {
 
         this.$once("hook:beforeDestroy", function() {
           resizeObserver.disconnect();
+        });
+      } else {
+        const handleResize = () => {
+          clearTimeout(this.resizeTimer);
+
+          this.resizeTimer = setTimeout(() => {
+            if (this.parent) {
+              const { w, h } = getElementPosition(this.$el.parentNode);
+
+              this.parentPosition = { w, h };
+
+              this.check();
+
+              this.$emit("resize", {
+                target: this.$el.parentNode,
+                contentRect: { width: w, height: h }
+              });
+            }
+          }, 100);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        this.$once("hook:beforeDestroy", function() {
+          window.removeEventListener("resize", handleResize);
         });
       }
     },
@@ -263,6 +294,8 @@ export default {
           return;
         }
       }
+
+      event.preventDefault();
 
       pointDown(this.point, event);
 
@@ -285,13 +318,28 @@ export default {
       handleActions[handleName] &&
         handleActions[handleName](position, startPosition, point);
 
+      let limits;
+      let props;
+
       if (parent) {
-        const { maxX, minX, maxY, minY, maxW, minW, maxH, minH } = this.limits;
-        setValue(maxX, minX, position, "x");
-        setValue(maxY, minY, position, "y");
-        setValue(maxW, minW, position, "w");
-        setValue(maxH, minH, position, "h");
+        limits = this.limits;
+        props = ["x", "y", "w", "h"];
+      } else {
+        limits = {
+          maxW: this.maxWidth,
+          maxH: this.maxHeight,
+          minW: this.minWidth,
+          minH: this.minHeight
+        };
+        props = ["w", "h"];
       }
+
+      props.forEach(prop => {
+        const upperCaseProp = prop.toLocaleUpperCase();
+        const max = limits["max" + upperCaseProp];
+        const min = limits["min" + upperCaseProp];
+        isNumber(max) && setValue(max, min, position, prop);
+      });
 
       if (this.handleName === "drag") {
         this.dragging = true;
@@ -321,7 +369,7 @@ export default {
     },
     check() {
       const { parent, parentPosition, position, minWidth, minHeight } = this;
-      if (parent) {
+      if (parent && parentPosition) {
         const newPosition = limit(
           parentPosition,
           position,
@@ -335,6 +383,8 @@ export default {
       const {
         minWidth,
         minHeight,
+        maxWidth,
+        maxHeight,
         startPosition,
         parentPosition,
         handleName
@@ -342,9 +392,6 @@ export default {
       const { w: pw, h: ph } = parentPosition;
       const { w: startW, h: startH, x: startX, y: startY } = startPosition;
       let maxW, maxH, minW, minH, minX, minY, maxX, maxY;
-
-      let maxWidth = this.maxWidth || pw;
-      let maxHeight = this.maxHeight || ph;
 
       if (handleName === "drag") {
         minX = 0;

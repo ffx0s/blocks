@@ -25,8 +25,13 @@ const state = () => ({
   editId: "",
   // 往父级插入组件时的父ID
   createParentId: "",
-  // 对应右侧选项卡的 tabActiveKey 属性
-  tabActiveKey: "add",
+  // 左侧选项卡
+  leftTab: {
+    activeKey: "add",
+    isFold: false
+  },
+  // 右侧选项卡的 tabActiveKey 属性
+  rightTabActiveKey: "edit",
   // 颜色选择器相关数据
   colorPickerModal: {
     show: false,
@@ -45,13 +50,26 @@ const mutations = {
     state.disableRedo = disableRedo;
   },
   setEditId(state, id) {
+    if (!state.leftTab.isFold) {
+      this.commit("editor/setLeftTabActiveKey", "tree");
+    }
+    state.rightTabActiveKey = "edit";
     state.editId = id;
   },
   setCreateParentId(state, id) {
     state.createParentId = id;
   },
-  setTabActiveKey(state, key) {
-    state.tabActiveKey = key;
+  setLeftTabActiveKey(state, key) {
+    if (key === "") {
+      // 折叠
+      state.leftTab = { activeKey: "", isFold: true };
+    } else {
+      // 展开
+      state.leftTab = { activeKey: key, isFold: false };
+    }
+  },
+  setRightTabActiveKey(state, key) {
+    state.rightTabActiveKey = key;
   },
   setColorPickerModal(state, props) {
     Object.keys(props).forEach(prop => {

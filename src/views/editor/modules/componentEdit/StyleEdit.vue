@@ -22,8 +22,10 @@
           {{ item.label }}
         </span>
         <component
+          size="small"
           :is="item.component"
           v-decorator="[item.fieldName, { initialValue: item.initialValue }]"
+          v-bind="item.componentProps"
         />
       </a-form-item>
     </a-form>
@@ -58,7 +60,7 @@ import store from "@/store";
 import InputNumber from "@/components/formInput/InputNumber";
 import InputBorder from "@/components/formInput/InputBorder";
 import InputColor from "@/components/formInput/InputColor";
-import { camelCaseToLine } from "@/utils/shared";
+import { deepCopy, camelCaseToLine } from "@/utils/shared";
 
 const styleProps = [
   { name: "宽度", prop: "width", component: "InputNumber" },
@@ -101,6 +103,52 @@ const styleProps = [
   {
     name: "右下圆角",
     prop: "border-bottom-right-radius",
+    component: "InputNumber"
+  },
+  {
+    name: "定位",
+    prop: "position",
+    component: "ASelect",
+    componentProps: {
+      options: [
+        "relative",
+        "absolute",
+        "fixed",
+        "static",
+        "sticky",
+        "inherit",
+        "initial"
+      ].map(v => ({
+        label: v,
+        value: v
+      }))
+    }
+  },
+  { name: "top", prop: "top", component: "InputNumber" },
+  { name: "right", prop: "right", component: "InputNumber" },
+  { name: "bottom", prop: "bottom", component: "InputNumber" },
+  { name: "left", prop: "left", component: "InputNumber" },
+  {
+    name: "overflow",
+    prop: "overflow",
+    component: "ASelect",
+    componentProps: {
+      options: [
+        "auto",
+        "hidden",
+        "scroll",
+        "visible",
+        "inherit",
+        "initial"
+      ].map(v => ({
+        label: v,
+        value: v
+      }))
+    }
+  },
+  {
+    name: "行高",
+    prop: "line-height",
     component: "InputNumber"
   }
 ];
@@ -218,6 +266,8 @@ export default {
           label: value.name, // 属性名，例：宽度...
           fieldName: styleProp, // 字段名，例：width...
           component: value.component, // 组件名，例：inputNumber...
+          componentProps:
+            value.componentProps && deepCopy(value.componentProps), // 组件属性
           initialValue: initialValue || "" // 对应样式属性的值，例：100px
         };
       }

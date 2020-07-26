@@ -3,7 +3,12 @@ import shortid from "shortid";
 import editor from "@/editor";
 import testData from "@/editor/testData";
 import { message } from "ant-design-vue";
-import { create, isParentComponent, componentsMap } from "@/editor/components";
+import {
+  create,
+  isParentComponent,
+  componentsMap,
+  findParent
+} from "@/editor/components";
 import { isNumber, deepCopy } from "@/utils/shared";
 import { Drop, Add, Remove, Move } from "@/editor/actions";
 
@@ -17,21 +22,6 @@ function loopComponent(component, callback) {
       loopComponent(children[i], callback);
     }
   }
-}
-
-function findParent(tree, id) {
-  function loop(target) {
-    const children = isParentComponent(target.tag) ? target.children : target;
-    for (let i = 0; i < children.length; i++) {
-      const current = children[i];
-      if (current.id === id) {
-        return [target, i];
-      }
-      const result = loop(current);
-      if (result) return result;
-    }
-  }
-  return loop(tree);
 }
 
 // 映射组件数据
@@ -76,12 +66,6 @@ function initTreeState(tree = []) {
     return isValid;
   }
 
-  // 过滤组件，排除无效的组件数据
-  tree = tree.filter(filterComponent);
-
-  // 以 id 为 key，值为组件数据对象的引用
-  const treeMap = {};
-
   function loop(component) {
     treeMap[component.id] = component;
 
@@ -89,6 +73,12 @@ function initTreeState(tree = []) {
       component.children.forEach(loop);
     }
   }
+
+  // 以 id 为 key，值为组件数据对象的引用
+  const treeMap = {};
+
+  // 过滤组件，排除无效的组件数据
+  tree = tree.filter(filterComponent);
 
   tree.forEach(loop);
 
@@ -148,9 +138,7 @@ const mutations = {
   },
   // 通过 id 删除组件
   remove(state, { id, record = true }) {
-    const [parent, index] = findParent(state.tree, id);
-
-    if (!parent) return;
+    const [parentId, index] = findParent(state.tree, id);
 
     const component = state.treeMap[id];
     const type = componentsMap[component.tag].type;
@@ -162,7 +150,7 @@ const mutations = {
         new Remove({
           id,
           index,
-          parentId: parent.id,
+          parentId,
           component: JSON.stringify(component)
         })
       );
@@ -170,12 +158,12 @@ const mutations = {
 
     deleteTreeMap.call(this, state.treeMap, id);
 
-    const children = getChildrenById(state, parent.id);
+    const children = getChildrenById(state, parentId);
     children.splice(index, 1);
   },
   // 添加组件
   add(state, { parentId, index, component, record = true }) {
-    const parentComponent = parentId ? state.treeMap[parentId] : {};
+    const parentComponent = state.treeMap[parentId] || {};
     const { error, parentTags, childTags } = isWrongChildren(
       parentComponent.tag,
       component.tag
@@ -208,8 +196,8 @@ const mutations = {
   move(state, { parentId, id, index, record = true }) {
     if (parentId === id) return;
 
-    const [moveParent, moveIndex] = findParent(state.tree, id);
-    const moveChildren = getChildrenById(state, moveParent.id);
+    const [moveParentId, moveIndex] = findParent(state.tree, id);
+    const moveChildren = getChildrenById(state, moveParentId);
     const children = getChildrenById(state, parentId);
 
     if (moveChildren === children) return;
@@ -228,8 +216,8 @@ const mutations = {
         new Move({
           id,
           parentId,
-          index: moveIndex,
-          moveParentId: moveParent.id
+          moveParentId,
+          index: moveIndex
         })
       );
     }
@@ -238,7 +226,7 @@ const mutations = {
     children.splice(isNumber(index) ? index : children.length, 0, component);
   },
   copy(state, { id, record = true }) {
-    const [parentComponent, index] = findParent(state.tree, id);
+    const [parentId, index] = findParent(state.tree, id);
     const component = deepCopy(state.treeMap[id]);
 
     component.id = shortid.generate();
@@ -250,7 +238,7 @@ const mutations = {
     this.commit("component/add", {
       record,
       component,
-      parentId: parentComponent.id,
+      parentId,
       index: index + 1
     });
   },

@@ -1,14 +1,17 @@
 <template>
   <div :class="$style.layout">
-    <EditorToolBar />
+    <transition name="v-slide-top">
+      <EditorToolBar v-show="isEdit" />
+    </transition>
     <div :class="$style.editor">
-      <div :class="$style.left">
+      <transition name="v-slide-left">
+        <EditorLeftSide :class="$style.side" v-show="isEdit" />
+      </transition>
+      <div :class="$style.middle">
         <EditorMain />
       </div>
       <transition name="v-slide-right">
-        <div :class="$style.right" v-show="isEdit">
-          <EditorSide />
-        </div>
+        <EditorRightSide :class="$style.side" v-show="isEdit" />
       </transition>
     </div>
     <ColorPickerModal />
@@ -18,15 +21,18 @@
 <script>
 import EditorToolBar from "./modules/editorToolBar";
 import EditorMain from "./modules/editorMain";
-import EditorSide from "./modules/editorSide";
+import EditorLeftSide from "./modules/editorSide/LeftSide";
+import EditorRightSide from "./modules/editorSide/RightSide";
 import ColorPickerModal from "@/components/colorPickerModal";
+
 import { mapGetters } from "vuex";
 
 export default {
   components: {
     EditorToolBar,
     EditorMain,
-    EditorSide,
+    EditorLeftSide,
+    EditorRightSide,
     ColorPickerModal
   },
   computed: {
@@ -49,13 +55,11 @@ export default {
   display: flex;
   flex: 1;
 }
-.left {
+.middle {
   position: relative;
   flex: 1;
 }
-.right {
-  margin-left: var(--margin);
-  width: 380px;
+.side {
   height: 100%;
   background-color: #fff;
   box-shadow: 1px 2px 15px rgba(0, 0, 0, 0.05);

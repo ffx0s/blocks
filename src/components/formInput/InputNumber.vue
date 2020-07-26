@@ -3,7 +3,7 @@
     <a-input-number
       autoFocus
       size="small"
-      style="width:80px"
+      style="width:70px"
       :value="initialValues[0]"
       @change="handleNumberChange"
     />

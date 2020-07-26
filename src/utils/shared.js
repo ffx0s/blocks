@@ -25,7 +25,8 @@ export function lineToCamelCase(name) {
 }
 
 export function getCssUnit(value) {
-  const unit = value.match(/[a-z|A-Z]+/g);
+  // eslint-disable-next-line no-useless-escape
+  const unit = value.match(/[a-z|A-Z|\%]+/g);
   return unit ? unit[0] : "";
 }
 

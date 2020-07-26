@@ -3,18 +3,21 @@ import store from "@/store";
 import { deepCopy } from "@/utils/shared";
 
 // 创建组件数据对象
-export function create(tag, componentProps, childrenComponent) {
-  const { props, children } = componentsMap[tag].init(
-    componentProps,
-    childrenComponent
-  );
+export function create(tag, data = {}, children) {
+  const isParent = isParentComponent(tag);
+  const [defaultData, defaultChildren] = componentsMap[tag].default
+    ? componentsMap[tag].default()
+    : isParent
+    ? [{}, []]
+    : [{}];
   const component = {
     tag,
-    props,
-    id: shortid.generate()
+    id: shortid.generate(),
+    props: { ...defaultData.props, ...data.props },
+    style: { ...defaultData.style, ...data.style }
   };
-  if (children) {
-    component.children = children;
+  if (isParent) {
+    component.children = children || defaultChildren;
   }
   return component;
 }
@@ -59,35 +62,31 @@ export const components = [
         initialValue: "start"
       }
     ],
-    init(props = {}, children = [create("v-text", { content: "row" })]) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [
+      {
+        props: { type: "flex" },
+        style: { height: "50px", "background-color": "#e7e7e7" }
+      },
+      [create("a-col"), create("a-col")]
+    ]
   },
   {
     tag: "a-col",
     name: "列",
     type: "parent",
     props: [
+      {
+        name: "flex",
+        component: "AInput",
+        componentProps: { placeholder: "1 / 100px / 1 1 auto" }
+      },
       { name: "offset", component: "AInputNumber", initialValue: 0 },
       { name: "order", component: "AInputNumber", initialValue: 0 },
       { name: "pull", component: "AInputNumber", initialValue: 0 },
       { name: "push", component: "AInputNumber", initialValue: 0 },
       { name: "span", component: "AInputNumber" }
     ],
-    init(props = {}, children = [create("v-text", { content: "col" })]) {
-      return {
-        props: {
-          span: 12,
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{ props: { flex: "1" } }, []]
   },
   {
     tag: "a-menu",
@@ -124,14 +123,7 @@ export const components = [
         initialValue: 0
       }
     ],
-    init(props = {}, children = [create("a-menu-item")]) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{}, [create("a-menu-item"), create("a-menu-item")]]
   },
   {
     tag: "a-menu-item",
@@ -146,14 +138,7 @@ export const components = [
         componentProps: { placeholder: "设置收缩时展示的悬浮标题" }
       }
     ],
-    init(props = {}, children = [create("v-text", { content: "菜单" })]) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{}, [create("v-text", { props: { content: "菜单" } })]]
   },
   {
     tag: "a-sub-menu",
@@ -168,80 +153,33 @@ export const components = [
         componentProps: { placeholder: "子菜单标题" }
       }
     ],
-    init(props = {}, children = [create("a-menu-item")]) {
-      return {
-        props: {
-          title: "子菜单",
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{ props: { title: "子菜单" } }, [create("a-menu-item")]]
   },
   {
     tag: "a-layout",
     name: "布局",
     type: "parent",
-    init(props = {}, children = [create("v-text", { content: "layout" })]) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{}, [create("v-text", { props: { content: "layout" } })]]
   },
   {
     tag: "a-layout-header",
     name: "头部",
-    type: "parent",
-    init(props = {}, children = []) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    type: "parent"
   },
   {
     tag: "a-layout-content",
     name: "内容",
-    type: "parent",
-    init(props = {}, children = []) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    type: "parent"
   },
   {
     tag: "a-layout-sider",
     name: "侧栏",
-    type: "parent",
-    init(props = {}, children = []) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    type: "parent"
   },
   {
     tag: "a-layout-footer",
     name: "尾部",
-    type: "parent",
-    init(props = {}, children = []) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    type: "parent"
   },
   {
     tag: "a-breadcrumb",
@@ -249,21 +187,16 @@ export const components = [
     type: "parent",
     childrenComponent: ["a-breadcrumb-item"],
     props: [{ name: "separator", component: "AInput", initialValue: "/" }],
-    init(
-      props = {},
-      children = [
-        create("a-breadcrumb-item", {}, [create("a-icon", { type: "home" })]),
+    default: () => [
+      {},
+      [
+        create("a-breadcrumb-item", {}, [
+          create("a-icon", { props: { type: "home" } })
+        ]),
         create("a-breadcrumb-item"),
         create("a-breadcrumb-item")
       ]
-    ) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    ]
   },
   {
     tag: "a-breadcrumb-item",
@@ -271,17 +204,10 @@ export const components = [
     type: "parent",
     parentComponent: ["a-breadcrumb"],
     props: [],
-    init(
-      props = {},
-      children = [create("v-text", { tag: "span", content: "页面" })]
-    ) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [
+      {},
+      [create("v-text", { props: { tag: "span", content: "页面" } })]
+    ]
   },
   {
     tag: "v-button",
@@ -291,9 +217,15 @@ export const components = [
       { name: "text", component: "AInput" },
       {
         name: "type",
-        component: "ARadioGroup",
+        component: "ASelect",
         componentProps: {
-          options: ["primary", "dashed", "danger", "link", "default"]
+          options: [
+            "primary",
+            "dashed",
+            "danger",
+            "link",
+            "default"
+          ].map(v => ({ label: v, value: v }))
         },
         initialValue: "default"
       },
@@ -322,14 +254,7 @@ export const components = [
       { name: "block", component: "ASwitch" },
       { name: "ghost", component: "ASwitch" }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          text: "button",
-          ...props
-        }
-      };
-    },
+    default: () => [{ props: { text: "button" } }],
     parse({ props, style }) {
       const styleData = parseStyle(style);
       const text = props.text;
@@ -353,22 +278,24 @@ export const components = [
       },
       {
         name: "tag",
-        component: "ARadioGroup",
+        component: "ASelect",
         componentProps: {
-          options: ["p", "span", "strong", "h1"]
+          style: { width: "80px" },
+          options: [
+            { value: "div", label: "div" },
+            { value: "span", label: "span" },
+            { value: "strong", label: "strong" },
+            { value: "p", label: "p" },
+            { value: "h1", label: "h1" },
+            { value: "h2", label: "h2" },
+            { value: "h3", label: "h3" },
+            { value: "h4", label: "h4" }
+          ]
         },
         initialValue: "span"
       }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          content: "文字",
-          tag: "span",
-          ...props
-        }
-      };
-    },
+    default: () => [{ props: { content: "文字", tag: "span" } }],
     parse({ props, style }) {
       const styleData = parseStyle(style);
       return `<${props.tag} ${styleData}>${props.content}</${props.tag}>`;
@@ -407,34 +334,21 @@ export const components = [
       },
       { name: "tabBarGutter", component: "AInputNumber" }
     ],
-    init(props = {}, children = [create("a-tab-pane")]) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{}, [create("a-tab-pane")]]
   },
   {
     tag: "a-tab-pane",
     name: "选项卡子项",
     type: "parent",
     parentComponent: ["a-tabs"],
-    props: [{ name: "tab", component: "AInput" }],
-    init(
-      props = {},
-      children = [create("v-text", { content: "Tab content" })]
-    ) {
-      return {
-        props: {
-          tab: "tab",
-          key: shortid.generate(),
-          ...props
-        },
-        children
-      };
-    }
+    props: [
+      { name: "tab", component: "AInput" },
+      { name: "key", component: "AInput" }
+    ],
+    default: () => [
+      { props: { tab: "tab", key: shortid.generate() } },
+      [create("v-text", { props: { content: "Tab content" } })]
+    ]
   },
   {
     tag: "a-avatar",
@@ -454,15 +368,7 @@ export const components = [
         initialValue: "circle"
       }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          size: 64,
-          icon: "user",
-          ...props
-        }
-      };
-    }
+    default: () => [{ props: { size: 64, icon: "user" } }]
   },
   {
     tag: "a-icon",
@@ -482,14 +388,7 @@ export const components = [
       { name: "rotate", component: "AInputNumber" },
       { name: "twoToneColor", component: "InputColor" }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          type: "sketch",
-          ...props
-        }
-      };
-    }
+    default: () => [{ props: { type: "sketch" } }]
   },
   {
     tag: "a-input",
@@ -513,21 +412,14 @@ export const components = [
         name: "type",
         component: "ARadioGroup",
         componentProps: {
-          options: ["text", "textarea"]
+          options: ["text", "textarea", "password"]
         },
         initialValue: "text"
       },
       { name: "prefix", component: "AInput" },
       { name: "suffix", component: "AInput" }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          placeholder: "Basic usage",
-          ...props
-        }
-      };
-    }
+    default: () => [{ props: { placeholder: "Basic usage" } }]
   },
   {
     tag: "a-progress",
@@ -561,14 +453,7 @@ export const components = [
       },
       { name: "successPercent", component: "AInputNumber" },
       { name: "strokeColor", component: "InputColor" }
-    ],
-    init(props = {}) {
-      return {
-        props: {
-          ...props
-        }
-      };
-    }
+    ]
   },
   {
     tag: "a-rate",
@@ -582,14 +467,7 @@ export const components = [
       { name: "autoFocus", component: "ASwitch" },
       { name: "character", component: "AInput" },
       { name: "count", component: "AInputNumber", initialValue: 5 }
-    ],
-    init(props = {}) {
-      return {
-        props: {
-          ...props
-        }
-      };
-    }
+    ]
   },
   {
     tag: "a-page-header",
@@ -601,16 +479,7 @@ export const components = [
       // { name: "backIcon", component: "AInput" },
       { name: "ghost", component: "ASwitch", initialValue: true }
     ],
-    init(props = {}, children = []) {
-      return {
-        props: {
-          title: "标题",
-          subTitle: "子标题",
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{ props: { title: "标题", subTitle: "子标题" } }, []]
   },
   {
     tag: "a-pagination",
@@ -635,16 +504,7 @@ export const components = [
         initialValue: "default"
       }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          current: 1,
-          pageSize: 10,
-          total: 30,
-          ...props
-        }
-      };
-    }
+    default: () => [{ props: { current: 1, pageSize: 10, total: 30 } }]
   },
   {
     tag: "a-steps",
@@ -694,22 +554,14 @@ export const components = [
         initialValue: "horizontal"
       }
     ],
-    init(
-      props = {},
-      children = [
-        create("a-step", { title: "Finished" }),
-        create("a-step", { title: "In Progress" }),
-        create("a-step", { title: "Waiting" })
+    default: () => [
+      { props: { current: 1 } },
+      [
+        create("a-step", { props: { title: "Finished" } }),
+        create("a-step", { props: { title: "In Progress" } }),
+        create("a-step", { props: { title: "Waiting" } })
       ]
-    ) {
-      return {
-        props: {
-          current: 1,
-          ...props
-        },
-        children
-      };
-    }
+    ]
   },
   {
     tag: "a-step",
@@ -722,14 +574,7 @@ export const components = [
       { name: "subTitle", component: "AInput" },
       { name: "disabled", component: "ASwitch" }
     ],
-    init(props = {}) {
-      return {
-        props: {
-          title: "步骤条子项",
-          ...props
-        }
-      };
-    }
+    default: () => [{ props: { title: "步骤条子项" } }]
   },
   {
     tag: "a-timeline",
@@ -748,17 +593,7 @@ export const components = [
         initialValue: "left"
       }
     ],
-    init(
-      props = {},
-      children = [create("a-timeline-item"), create("a-timeline-item")]
-    ) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    default: () => [{}, [create("a-timeline-item"), create("a-timeline-item")]]
   },
   {
     tag: "a-timeline-item",
@@ -779,21 +614,16 @@ export const components = [
         }
       }
     ],
-    init(
-      props = {},
-      children = [
+    default: () => [
+      {},
+      [
         create("v-text", {
-          content: "<p>Create a services site</p><p>2015-09-01</p>"
+          props: {
+            content: "<p>Create a services site</p><p>2015-09-01</p>"
+          }
         })
       ]
-    ) {
-      return {
-        props: {
-          ...props
-        },
-        children
-      };
-    }
+    ]
   },
   {
     tag: "a-alert",
@@ -815,33 +645,212 @@ export const components = [
       { name: "closable", component: "ASwitch" },
       { name: "closeText", component: "AInput" }
     ],
-    init(props = {}) {
-      return {
+    default: () => [{ props: { message: "Info text" } }]
+  },
+  {
+    tag: "a-carousel",
+    name: "走马灯",
+    type: "parent",
+    props: [
+      { name: "autoplay", component: "ASwitch" },
+      { name: "dots", component: "ASwitch", initialValue: true },
+      {
+        name: "dotPosition",
+        component: "ARadioGroup",
+        componentProps: {
+          options: ["top", "bottom", "left", "right"]
+        },
+        initialValue: "bottom"
+      },
+      {
+        name: "effect",
+        component: "ARadioGroup",
+        componentProps: {
+          options: ["scrollx", "fade"]
+        },
+        initialValue: "scrollx"
+      }
+    ],
+    default: () => [
+      {},
+      ["1", "2", "3"].map(i =>
+        create("v-text", {
+          props: { tag: "div", content: i },
+          style: { height: "250px", "background-color": "pink" }
+        })
+      )
+    ]
+  },
+  {
+    tag: "a-collapse",
+    name: "折叠面板",
+    type: "parent",
+    childrenComponent: ["a-collapse-panel"],
+    props: [
+      { name: "bordered", component: "ASwitch", initialValue: true },
+      { name: "accordion", component: "ASwitch" },
+      {
+        name: "expandIconPosition",
+        component: "ARadioGroup",
+        componentProps: {
+          options: ["left", "right"]
+        },
+        initialValue: "left"
+      },
+      { name: "destroyInactivePanel", component: "ASwitch" }
+    ],
+    default: () => [
+      {},
+      [create("a-collapse-panel"), create("a-collapse-panel")]
+    ]
+  },
+  {
+    tag: "a-collapse-panel",
+    name: "折叠面板子项",
+    type: "parent",
+    parentComponent: ["a-collapse"],
+    props: [
+      { name: "disabled", component: "ASwitch" },
+      { name: "header", component: "AInput" },
+      { name: "key", component: "AInput" },
+      { name: "forceRender", component: "ASwitch" },
+      { name: "showArrow", component: "ASwitch", initialValue: true }
+    ],
+    default: () => [
+      { props: { header: "header", key: shortid.generate() } },
+      [create("v-text", { props: { content: "Collapse content" } })]
+    ]
+  },
+  {
+    tag: "a-descriptions",
+    name: "描述列表",
+    type: "parent",
+    childrenComponent: ["a-descriptions-item"],
+    props: [
+      { name: "title", component: "AInput" },
+      { name: "bordered", component: "ASwitch" },
+      { name: "column", component: "AInputNumber", initialValue: 3 },
+      {
+        name: "size",
+        component: "ARadioGroup",
+        componentProps: {
+          options: ["default", "middle", "small"]
+        },
+        initialValue: "default"
+      },
+      {
+        name: "layout",
+        component: "ARadioGroup",
+        componentProps: {
+          options: ["horizontal", "vertical"]
+        },
+        initialValue: "horizontal"
+      },
+      { name: "colon", component: "ASwitch" }
+    ],
+    default: () => [
+      { props: { title: "User Info" } },
+      [
+        ["Product", "Cloud Database"],
+        ["Billing", "Prepaid"],
+        ["Time", "18:00:00"],
+        ["Amount", "$80.00"],
+        ["Discount", "$20.00"],
+        ["Official", "$60.00"]
+      ].map(([label, content]) =>
+        create("a-descriptions-item", { props: { label } }, [
+          create("v-text", { props: { content } })
+        ])
+      )
+    ]
+  },
+  {
+    tag: "a-descriptions-item",
+    name: "描述列表子项",
+    type: "parent",
+    parentComponent: ["a-descriptions"],
+    props: [
+      { name: "label", component: "AInput" },
+      { name: "span", component: "AInputNumber", initialValue: 1 }
+    ],
+    default: () => [{ props: { label: "label" } }, [create("v-text")]]
+  },
+  {
+    tag: "a-statistic",
+    name: "统计数值",
+    type: "single",
+    props: [
+      { name: "title", component: "AInput" },
+      { name: "value", component: "AInputNumber" },
+      { name: "precision", component: "AInputNumber" },
+      { name: "decimalSeparator", component: "AInput", initialValue: "." },
+      { name: "groupSeparator", component: "AInput", initialValue: "," },
+      { name: "prefix", component: "AInput" },
+      { name: "suffix", component: "AInput" }
+    ],
+    default: () => [{ props: { title: "Active Users", value: "119988" } }]
+  },
+  {
+    tag: "a-statistic-countdown",
+    name: "倒计时",
+    type: "single",
+    props: [
+      { name: "title", component: "AInput" },
+      { name: "value", component: "AInputNumber" },
+      { name: "format", component: "AInput", initialValue: "HH:mm:ss" },
+      { name: "prefix", component: "AInput" },
+      { name: "suffix", component: "AInput" }
+    ],
+    default: () => [
+      {
         props: {
-          message: "Info text",
-          ...props
+          title: "Countdown",
+          value: Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30
         }
-      };
-    }
+      }
+    ]
+  },
+  {
+    tag: "a-badge",
+    name: "徽标数",
+    type: "parent",
+    props: [
+      { name: "count", component: "AInputNumber" },
+      { name: "color", component: "InputColor" },
+      {
+        name: "status",
+        component: "ASelect",
+        componentProps: {
+          style: { width: "100px" },
+          options: [
+            "success",
+            "processing",
+            "default",
+            "error",
+            "warning",
+            "normal"
+          ].map(v => ({ label: v, value: v === "normal" ? "" : v }))
+        },
+        initialValue: "normal"
+      },
+      { name: "text", component: "AInput" },
+      { name: "title", component: "AInput" },
+      { name: "dot", component: "ASwitch" },
+      { name: "overflowCount", component: "AInputNumber", initialValue: 99 },
+      { name: "showZero", component: "ASwitch" }
+    ],
+    default: () => [{ props: { count: 8 } }, []]
+  },
+  {
+    tag: "a-tag",
+    name: "标签",
+    type: "parent",
+    props: [
+      { name: "closable", component: "ASwitch" },
+      { name: "color", component: "InputColor" }
+    ],
+    default: () => [{}, [create("v-text")]]
   }
-  // {
-  //   tag: "a-affix",
-  //   name: "固钉",
-  //   type: "parent",
-  //   props: [
-  //     { name: "offsetTop", component: "AInputNumber" },
-  //     { name: "offsetBottom", component: "AInputNumber" }
-  //   ],
-  //   init(props = {}, children = [create("v-button", { text: "a-affix" })]) {
-  //     return {
-  //       props: {
-  //         offsetTop: 10,
-  //         ...props
-  //       },
-  //       children
-  //     };
-  //   }
-  // }
 ];
 
 export const componentsMap = (function() {
@@ -933,4 +942,24 @@ export function parseComponent(component) {
   const styleData = parseStyle(style);
 
   return `<${tag} ${propsData} ${styleData}>${content}</${tag}>`;
+}
+
+export function findParent(tree, id, idPath = [], props = { id: "id" }) {
+  for (let i = 0; i < tree.length; i++) {
+    const current = tree[i];
+    const newPath = idPath.concat();
+
+    newPath.push(current[props.id]);
+
+    if (current[props.id] === id) {
+      return [newPath[newPath.length - 2], i, newPath];
+    }
+
+    if (current.children) {
+      const result = findParent(current.children, id, newPath, props);
+      if (result) {
+        return result;
+      }
+    }
+  }
 }

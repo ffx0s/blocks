@@ -35,31 +35,34 @@
       :style="singleLayer.style"
       v-show="singleLayer.show"
       @click="handleEdit(singleLayer.id)"
+      @mousedown.stop="handleMousedown($event, singleLayer.id)"
       @mouseleave="hideSingleLayer"
     >
-      <div :class="$style.actions">
-        {{ singleLayer.tag }}
-        <a-icon
-          type="edit"
-          title="编辑"
-          @click.stop="handleEdit(singleLayer.id)"
-        />
-        <a-icon
-          type="drag"
-          title="移动组件"
-          @click.stop
-          @mousedown.stop="handleMousedown($event, singleLayer.id)"
-        />
-        <a-icon
-          type="copy"
-          title="复制"
-          @click.stop="handleCopy(singleLayer.id)"
-        />
-        <a-icon
-          type="delete"
-          title="删除"
-          @click.stop="handleDelete(singleLayer.id)"
-        />
+      <div
+        class="ant-tooltip ant-tooltip-placement-bottom"
+        style="bottom:-40px;white-space: nowrap;"
+      >
+        <div class="ant-tooltip-content">
+          <div class="ant-tooltip-arrow"></div>
+          <div role="tooltip" class="ant-tooltip-inner">
+            {{ singleLayer.tag }}
+            <a-icon
+              type="edit"
+              title="编辑"
+              @click.stop="handleEdit(singleLayer.id)"
+            />
+            <a-icon
+              type="copy"
+              title="复制"
+              @click.stop="handleCopy(singleLayer.id)"
+            />
+            <a-icon
+              type="delete"
+              title="删除"
+              @click.stop="handleDelete(singleLayer.id)"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -104,7 +107,6 @@ export default {
       store.commit("component/remove", { id });
     },
     handleEdit(id) {
-      store.commit("editor/setTabActiveKey", "edit");
       store.commit("editor/setEditId", id);
     },
     handleCopy(id) {
@@ -119,9 +121,6 @@ export default {
     handleMousemove() {
       const el = getComponentEl(this.moveId);
       const type = getComponentType(el);
-      el.setAttribute("draggable", "true");
-      el.addEventListener("dragstart", this.handleDragstart, { once: true });
-      el.addEventListener("dragend", this.handleDragend, { once: true });
 
       store.commit("selectedLayer/setLayerProps", {
         type,
@@ -131,6 +130,10 @@ export default {
           }
         }
       });
+
+      el.setAttribute("draggable", "true");
+      el.addEventListener("dragstart", this.handleDragstart, { once: true });
+      el.addEventListener("dragend", this.handleDragend, { once: true });
       document.removeEventListener("mousemove", this.handleMousemove);
     },
     handleMouseup() {
@@ -161,32 +164,27 @@ export default {
   border: 2px solid #1890ff;
   z-index: 4;
 }
-.parent .actions {
+.actions {
   position: absolute;
   left: -2px;
   top: -27px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border: 2px solid #1890ff;
-  pointer-events: auto;
-}
-.single {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(115, 184, 255, 0.4);
-  z-index: 4;
-}
-.actions {
   display: flex;
   align-items: center;
   padding: 1px 5px;
   font-size: 14px;
   color: #fff;
   background-color: rgba(24, 144, 255, 0.8);
-  border-radius: 5px;
+  border: 2px solid #1890ff;
+  border-radius: 5px 5px 0 0;
   white-space: nowrap;
+  pointer-events: auto;
+}
+.single {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(115, 184, 255, 0.2);
+  z-index: 4;
 }
 .actions::selection {
   background-color: transparent;
@@ -196,12 +194,8 @@ export default {
 }
 .layer i {
   margin: 0 3px;
-  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   font-size: 14px;
-}
-.layer i:hover {
-  color: #fff;
 }
 
 .more {
