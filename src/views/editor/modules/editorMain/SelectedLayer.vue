@@ -41,6 +41,7 @@
       <div
         class="ant-tooltip ant-tooltip-placement-bottom"
         style="bottom:-40px;white-space: nowrap;"
+        @mousemove.stop
       >
         <div class="ant-tooltip-content">
           <div class="ant-tooltip-arrow"></div>
