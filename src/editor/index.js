@@ -51,10 +51,8 @@ class Editor {
   unbindShortcuts() {
     shortcuts.unbind();
   }
-  setCanvas(el, initX = 0, initY = 0) {
+  setCanvas(el) {
     this.canvasEl = el;
-    this.canvasInitX = initX;
-    this.canvasInitY = initY;
   }
   download() {
     const html = template({
@@ -91,10 +89,13 @@ class Editor {
   }
   toCode() {
     const html = store.state.component.tree.map(parseComponent).join("");
-    const code = html_beautify(`<template>${html}</template>`, {
-      indent_size: 2,
-      wrap_line_length: 100
-    });
+    const code = html_beautify(
+      `<template><div style="height:100%;">${html}</div></template>`,
+      {
+        indent_size: 2,
+        wrap_line_length: 100
+      }
+    );
 
     return code;
   }

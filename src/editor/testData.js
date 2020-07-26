@@ -2,126 +2,136 @@ export default [
   {
     tag: "a-layout",
     props: {},
-    id: "t_EwM5xWHb",
+    id: "oRhLgtE1UL",
     children: [
       {
         tag: "a-layout-sider",
         props: {},
-        id: "-nHTcYCng",
+        id: "eXEHDmeoK",
         children: [
           {
+            tag: "v-text",
+            id: "d7o1Ns17X",
+            props: { tag: "div", content: "Logo" },
+            style: {
+              "line-height": "30px",
+              color: "rgba(255, 255, 255, 1)",
+              "font-size": "24px",
+              padding: "17px"
+            }
+          },
+          {
             tag: "a-menu",
-            props: { mode: "inline", theme: "dark", selectable: true },
-            id: "54DxZyWhBa",
+            props: { theme: "dark" },
+            id: "ZqCSQvIpcc",
             children: [
               {
-                tag: "a-sub-menu",
-                props: { title: "子菜单" },
-                id: "w4EzgGBibI",
+                tag: "a-menu-item",
+                props: {},
+                id: "OxExtjVkR",
                 children: [
                   {
-                    tag: "a-menu-item",
-                    props: {},
-                    id: "i_HE9U_mpn",
-                    children: [
-                      {
-                        tag: "a-icon",
-                        props: { type: "sketch" },
-                        id: "kQYRTD7bW"
-                      },
-                      {
-                        tag: "v-text",
-                        props: { content: "菜单", tag: "span" },
-                        id: "BBTRB4Cq2q"
-                      }
-                    ]
+                    tag: "a-icon",
+                    props: {
+                      type: "user",
+                      spin: false,
+                      theme: "outlined",
+                      twoToneColor: "rgba(107, 47, 47, 1)"
+                    },
+                    id: "daulB6rgT"
                   },
                   {
-                    tag: "a-menu-item",
-                    props: {},
-                    id: "oua5qM2Pr",
-                    children: [
-                      {
-                        tag: "v-text",
-                        props: { content: "菜单", tag: "span" },
-                        id: "PMT7QiD2gl"
-                      }
-                    ]
-                  }
-                ],
-                style: {}
-              },
-              {
-                tag: "a-menu-item",
-                props: { disabled: true },
-                id: "ykM1d3_isS",
-                children: [
-                  { tag: "a-icon", props: { type: "user" }, id: "B9pfyn7aF" },
-                  {
                     tag: "v-text",
-                    props: { content: "菜单", tag: "span" },
-                    id: "M49J0o68J"
+                    props: { tag: "span", content: "用户管理" },
+                    id: "-_w61pLImc"
                   }
                 ]
               },
               {
                 tag: "a-menu-item",
                 props: {},
-                id: "GIAWYLKbf",
+                id: "3mDv9PWKL",
                 children: [
-                  { tag: "a-icon", props: { type: "sketch" }, id: "Mda1_KmnW" },
+                  {
+                    tag: "a-icon",
+                    props: {
+                      type: "area-chart",
+                      spin: false,
+                      theme: "outlined",
+                      twoToneColor: "rgba(107, 47, 47, 1)"
+                    },
+                    id: "xQxtO83kyI"
+                  },
                   {
                     tag: "v-text",
-                    props: { content: "菜单", tag: "span" },
-                    id: "euQuNHsqLm"
+                    props: { tag: "span", content: "数据分析" },
+                    id: "3Hp8EvpoyC"
                   }
                 ]
               },
               {
                 tag: "a-menu-item",
                 props: {},
-                id: "ERHrlrkVYf",
+                id: "viMA25Vt80",
                 children: [
                   {
-                    tag: "v-text",
-                    props: { content: "菜单", tag: "span" },
-                    id: "9U7mKhePMY"
-                  }
-                ]
-              },
-              {
-                tag: "a-menu-item",
-                props: { disabled: false },
-                id: "rFxkukB7o",
-                children: [
+                    tag: "a-icon",
+                    props: {
+                      type: "form",
+                      spin: false,
+                      theme: "outlined",
+                      twoToneColor: "rgba(107, 47, 47, 1)"
+                    },
+                    id: "RhrW7zXzrM"
+                  },
                   {
                     tag: "v-text",
-                    props: { content: "home", tag: "span" },
-                    id: "aRqj-yaQOd"
-                  }
-                ]
-              },
-              {
-                tag: "a-menu-item",
-                props: {},
-                id: "LhN-EAJlD",
-                children: [
-                  {
-                    tag: "v-text",
-                    props: { content: "菜单", tag: "span" },
-                    id: "Gj1IpZWtJc"
+                    props: { content: "订单管理", tag: "span" },
+                    id: "yS_18kCxl9"
                   }
                 ]
               },
               {
                 tag: "a-menu-item",
                 props: {},
-                id: "8ZY6-Bwh1",
+                id: "cSF63-sxw",
                 children: [
                   {
+                    tag: "a-icon",
+                    props: {
+                      type: "alipay",
+                      spin: false,
+                      theme: "outlined",
+                      twoToneColor: "rgba(107, 47, 47, 1)"
+                    },
+                    id: "bcM5bLzV2L"
+                  },
+                  {
                     tag: "v-text",
-                    props: { content: "菜单", tag: "span" },
-                    id: "9gYLX_jtrG"
+                    props: { tag: "span", content: "售后服务" },
+                    id: "u74R0nilEk"
+                  }
+                ]
+              },
+              {
+                tag: "a-menu-item",
+                props: {},
+                id: "TMWwoItps",
+                children: [
+                  {
+                    tag: "a-icon",
+                    props: {
+                      type: "car",
+                      spin: false,
+                      theme: "outlined",
+                      twoToneColor: "rgba(107, 47, 47, 1)"
+                    },
+                    id: "SKLE82J2tQ"
+                  },
+                  {
+                    tag: "v-text",
+                    props: { tag: "span", content: "物流发货" },
+                    id: "gI09GAfJHX"
                   }
                 ]
               }
@@ -131,45 +141,64 @@ export default [
       },
       {
         tag: "a-layout",
+        id: "SSa85NNn2I",
         props: {},
-        id: "ql08xE0ZL3",
+        style: {},
         children: [
           {
             tag: "a-layout-header",
+            id: "U-M7XjoEg",
             props: {},
-            id: "WYfgcWXbg",
+            style: {},
             children: [
               {
                 tag: "a-row",
-                props: { type: "flex" },
-                id: "GRXniXRKXI",
+                id: "b5L9aSbINI",
+                props: { type: "flex", justify: "end", align: "middle" },
+                style: {},
                 children: [
                   {
                     tag: "a-col",
-                    props: { span: 12 },
-                    id: "7WN6QahDh",
+                    id: "XHd2AzL89Z",
+                    props: { span: 7, flex: "200px" },
+                    style: {},
                     children: [
                       {
-                        tag: "a-avatar",
-                        props: { size: 48, icon: "user" },
-                        id: "-NNfbV3s9"
+                        tag: "a-input",
+                        id: "IjUnQMS6Z",
+                        props: {
+                          placeholder: "搜索",
+                          size: "default",
+                          type: "text"
+                        },
+                        style: {}
                       }
                     ]
                   },
                   {
                     tag: "a-col",
-                    props: { span: 12 },
-                    id: "f28EPz3yEQ",
+                    id: "tzV8jmlI8O",
+                    props: { offset: 1 },
+                    style: {},
                     children: [
                       {
-                        tag: "a-input",
+                        tag: "a-badge",
+                        id: "LEOxj1SMf",
                         props: {
-                          placeholder: "搜索",
-                          size: "default",
-                          allowClear: false,
-                          disabled: false
+                          dot: true,
+                          showZero: true,
+                          count: 9,
+                          status: "error"
                         },
-                        id: "eJHgZyt8S"
+                        style: {},
+                        children: [
+                          {
+                            tag: "a-avatar",
+                            id: "fOsVqatVK",
+                            props: { size: 38, icon: "user" },
+                            style: {}
+                          }
+                        ]
                       }
                     ]
                   }
@@ -180,251 +209,316 @@ export default [
           {
             tag: "a-layout-content",
             props: {},
-            id: "UDoH0jZ_u",
+            id: "gv37Lb78J",
             children: [
               {
-                tag: "a-page-header",
-                props: {
-                  ghost: false,
-                  title: "测试",
-                  subTitle: "这是默认的测试数据"
-                },
-                id: "HkL_TLIJI",
+                tag: "a-breadcrumb",
+                props: {},
+                id: "O4JwSPYQXb",
                 children: [
                   {
-                    tag: "a-breadcrumb",
+                    tag: "a-breadcrumb-item",
                     props: {},
-                    id: "9MNAHGMoGV",
+                    id: "YgqODEXFEQ",
                     children: [
                       {
-                        tag: "a-breadcrumb-item",
-                        props: {},
-                        id: "VEj9rcP-5A",
-                        children: [
-                          {
-                            tag: "a-icon",
-                            props: { type: "home" },
-                            id: "vWodUEeTR"
-                          }
-                        ]
-                      },
-                      {
-                        tag: "a-breadcrumb-item",
-                        props: {},
-                        id: "QhygDrq7DK",
-                        children: [
-                          {
-                            tag: "v-text",
-                            props: { content: "页面", tag: "span" },
-                            id: "L9L11dUykC"
-                          }
-                        ]
-                      },
-                      {
-                        tag: "a-breadcrumb-item",
-                        props: {},
-                        id: "zzlQf3rHYM",
-                        children: [
-                          {
-                            tag: "v-text",
-                            props: { content: "页面", tag: "span" },
-                            id: "h0YAGRwaeh"
-                          }
-                        ]
-                      }
-                    ],
-                    style: { "margin-bottom": "20px" }
-                  },
-                  {
-                    tag: "a-alert",
-                    props: {
-                      type: "info",
-                      message: "信息提示",
-                      description: "描述",
-                      banner: true,
-                      closable: false,
-                      showIcon: true
-                    },
-                    id: "hrR9bLrNN",
-                    style: { "margin-bottom": "30px" }
-                  },
-                  {
-                    tag: "a-steps",
-                    props: {
-                      current: 1,
-                      status: "process",
-                      direction: "horizontal",
-                      size: "small",
-                      type: "default",
-                      labelPlacement: "horizontal"
-                    },
-                    id: "gTopCex3eb",
-                    children: [
-                      {
-                        tag: "a-step",
-                        props: { title: "步骤1" },
-                        id: "MrJ2XIoSI"
-                      },
-                      {
-                        tag: "a-step",
-                        props: {
-                          title: "步骤2",
-                          description: "描述",
-                          disabled: false
-                        },
-                        id: "KkbMg38B5g"
-                      },
-                      {
-                        tag: "a-step",
-                        props: { title: "步骤3", subTitle: "子标题" },
-                        id: "BJh0HyF7G"
+                        tag: "a-icon",
+                        props: { type: "home", spin: false },
+                        id: "sQ4i_6JLW"
                       }
                     ]
                   },
                   {
+                    tag: "a-breadcrumb-item",
+                    props: {},
+                    id: "m-3UVnKAWZ",
+                    children: [
+                      {
+                        tag: "v-text",
+                        props: { tag: "span", content: "用户管理" },
+                        id: "bWUg8WDjhp"
+                      }
+                    ]
+                  },
+                  {
+                    tag: "a-breadcrumb-item",
+                    props: {},
+                    id: "Jh4UhOxiFO",
+                    children: [
+                      {
+                        tag: "v-text",
+                        props: { tag: "span", content: "设置" },
+                        id: "04qvkiw0e8"
+                      }
+                    ]
+                  }
+                ],
+                style: { margin: "20px" }
+              },
+              {
+                tag: "a-page-header",
+                props: { title: "张三", ghost: false, subTitle: "普通用户" },
+                id: "z-FLC3f9E",
+                children: [
+                  {
+                    tag: "a-alert",
+                    id: "l1gud3Uyf",
+                    props: {
+                      banner: false,
+                      type: "error",
+                      showIcon: true,
+                      message: "他有 1 项违规记录！"
+                    },
+                    style: {}
+                  },
+                  {
                     tag: "a-timeline",
-                    props: { reverse: false, pending: "pending", mode: "left" },
-                    id: "-rD4WDRkaT",
+                    props: { mode: "left", reverse: false },
+                    id: "8jCTV1QzCI",
                     children: [
                       {
                         tag: "a-timeline-item",
-                        props: {
-                          color: "rgba(35, 122, 103, 1)",
-                          position: "left"
-                        },
-                        id: "8C0f1h57OX",
+                        props: { position: "left" },
+                        id: "8vqtFcaonb",
                         children: [
                           {
                             tag: "v-text",
                             props: {
-                              content:
-                                "<p>Create a services site</p><p>2015-09-01</p>",
-                              tag: "span"
+                              tag: "span",
+                              content: "最后登录时间<br />2019-09-09"
                             },
-                            id: "LP4NumlGn"
+                            id: "gwlMIZzi8_",
+                            style: {}
                           }
                         ]
                       },
                       {
                         tag: "a-timeline-item",
-                        props: {
-                          color: "rgba(0, 0, 255, 0.48999999999999955)"
-                        },
-                        id: "WCUve9CYde",
+                        id: "w96lCbeytO",
+                        props: {},
+                        style: {},
                         children: [
                           {
                             tag: "v-text",
+                            id: "MKRKew94d",
                             props: {
-                              content:
-                                "<p>Create a services site</p><p>2015-09-01</p>",
-                              tag: "strong"
+                              tag: "span",
+                              content: "注册时间<br />2015-09-01"
                             },
-                            id: "UojXRjchS"
-                          }
-                        ]
-                      },
-                      {
-                        tag: "a-timeline-item",
-                        props: { color: "green", position: "left" },
-                        id: "CIjkC52DD",
-                        children: [
-                          {
-                            tag: "v-text",
-                            props: {
-                              content:
-                                "<p>Create a services site</p><p>2015-09-01</p>",
-                              tag: "span"
-                            },
-                            id: "PMhQLHW4nC"
+                            style: {}
                           }
                         ]
                       }
                     ],
-                    style: { width: "400px" }
-                  },
-                  {
-                    tag: "a-progress",
-                    props: {
-                      percent: 60,
-                      strokeColor: "rgba(209, 145, 145, 1)"
-                    },
-                    id: "24tBb1EXS",
-                    style: { "margin-top": "30px" }
-                  },
-                  {
-                    tag: "a-progress",
-                    props: {
-                      percent: 30,
-                      strokeColor: "rgba(80, 227, 194, 1)",
-                      status: "normal",
-                      strokeLinecap: "square",
-                      type: "circle"
-                    },
-                    id: "igV5XD4to",
-                    style: { "margin-top": "30px" }
+                    style: { "margin-top": "20px" }
                   },
                   {
                     tag: "a-tabs",
                     props: {},
-                    id: "12tWLtjJIz",
+                    id: "XSq5hZolBe",
                     children: [
                       {
                         tag: "a-tab-pane",
-                        props: { tab: "tab" },
-                        id: "FWjtxd9_4n",
+                        props: { key: "5M4d9uPx6k", tab: "基础信息" },
+                        id: "Du0Ntf6v6w",
                         children: [
                           {
-                            tag: "v-text",
-                            props: { content: "Tab content", tag: "span" },
-                            id: "z4gYJpHAj"
+                            tag: "a-descriptions",
+                            id: "maSQjmyT1q7",
+                            props: { title: "User Info" },
+                            style: {},
+                            children: [
+                              {
+                                tag: "a-descriptions-item",
+                                id: "wLJawr9BjE",
+                                props: { label: "Product" },
+                                style: {},
+                                children: [
+                                  {
+                                    tag: "a-tag",
+                                    id: "McOwvDkRCV",
+                                    props: {
+                                      closable: false,
+                                      color: "rgba(240, 114, 114, 1)"
+                                    },
+                                    style: {},
+                                    children: [
+                                      {
+                                        tag: "v-text",
+                                        id: "UYbxru-2x",
+                                        props: {
+                                          tag: "span",
+                                          content: "Data base"
+                                        },
+                                        style: {}
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                tag: "a-descriptions-item",
+                                id: "I5p28GO9kL",
+                                props: { label: "Billing" },
+                                style: {},
+                                children: [
+                                  {
+                                    tag: "v-text",
+                                    id: "YMLz5cEAtZ",
+                                    props: { content: "Prepaid", tag: "span" },
+                                    style: {}
+                                  }
+                                ]
+                              },
+                              {
+                                tag: "a-descriptions-item",
+                                id: "iVtCMTamb4",
+                                props: { label: "Time" },
+                                style: {},
+                                children: [
+                                  {
+                                    tag: "v-text",
+                                    id: "tBnEBUDAAv",
+                                    props: { content: "18:00:00", tag: "span" },
+                                    style: {}
+                                  }
+                                ]
+                              },
+                              {
+                                tag: "a-descriptions-item",
+                                id: "SpnFlN5fsE",
+                                props: { label: "Amount" },
+                                style: {},
+                                children: [
+                                  {
+                                    tag: "v-text",
+                                    id: "lGjYDCUPT1",
+                                    props: { content: "$80.00", tag: "span" },
+                                    style: {}
+                                  }
+                                ]
+                              },
+                              {
+                                tag: "a-descriptions-item",
+                                id: "_iCfAJkUGx",
+                                props: { label: "Discount" },
+                                style: {},
+                                children: [
+                                  {
+                                    tag: "v-text",
+                                    id: "ceSTD5KD_e",
+                                    props: { content: "$20.00", tag: "span" },
+                                    style: {}
+                                  }
+                                ]
+                              },
+                              {
+                                tag: "a-descriptions-item",
+                                id: "gM-38UYVMoI",
+                                props: { label: "Official" },
+                                style: {},
+                                children: [
+                                  {
+                                    tag: "v-text",
+                                    id: "Y_UEleF0XO",
+                                    props: { content: "$60.00", tag: "span" },
+                                    style: {}
+                                  }
+                                ]
+                              }
+                            ]
                           }
                         ]
                       },
                       {
                         tag: "a-tab-pane",
-                        props: { tab: "tab2" },
-                        id: "9l7Zx2YR1",
+                        props: { tab: "认证", key: "yH3x5m2nnv" },
+                        id: "17-ZINE2zD",
                         children: [
                           {
-                            tag: "v-text",
-                            props: { content: "Tab content", tag: "span" },
-                            id: "0pvTJFDG-E"
+                            tag: "a-steps",
+                            props: {
+                              current: 1,
+                              type: "default",
+                              status: "process",
+                              direction: "horizontal",
+                              labelPlacement: "horizontal",
+                              size: "default"
+                            },
+                            id: "SI2OOY4vuc",
+                            children: [
+                              {
+                                tag: "a-step",
+                                props: { title: "资料提交" },
+                                id: "Ci-dggTLKr"
+                              },
+                              {
+                                tag: "a-step",
+                                props: { title: "审核中" },
+                                id: "V7lJXXAUd8"
+                              },
+                              {
+                                tag: "a-step",
+                                props: { title: "完成认证", disabled: false },
+                                id: "y6cc3ZC7Km"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        tag: "a-tab-pane",
+                        props: { key: "pBpSIf1PJq", tab: "安全设置" },
+                        id: "VZi-BW-PAK",
+                        children: [
+                          {
+                            tag: "a-input",
+                            id: "SW-hzKzOq",
+                            props: { placeholder: "账户名", value: "莉丝" },
+                            style: { "margin-bottom": "10px" }
+                          },
+                          {
+                            tag: "a-input",
+                            id: "5PBhX_C5n",
+                            props: { placeholder: "密码", type: "password" },
+                            style: { "margin-bottom": "10px" }
+                          },
+                          {
+                            tag: "a-input",
+                            id: "bvF-rkRLw",
+                            props: {
+                              placeholder: "确认密码",
+                              type: "password"
+                            },
+                            style: { "margin-bottom": "10px" }
+                          },
+                          {
+                            tag: "v-button",
+                            props: {
+                              text: "修改",
+                              size: "default",
+                              block: false,
+                              ghost: true,
+                              type: "danger",
+                              disabled: false,
+                              loading: false
+                            },
+                            id: "mO6pxAbfK",
+                            style: {}
                           }
                         ]
                       }
                     ]
                   }
-                ]
-              },
-              {
-                tag: "a-pagination",
-                props: {
-                  current: 1,
-                  pageSize: 10,
-                  total: 30,
-                  showSizeChanger: true,
-                  showQuickJumper: false
-                },
-                id: "uhi0D9mzn",
-                style: { "margin-top": "30px", "margin-left": "10px" }
+                ],
+                style: { height: "100%" }
               }
             ],
-            style: {}
+            style: { overflow: "auto" }
           }
         ]
       }
-    ]
-  },
-  {
-    tag: "a-layout-footer",
-    props: {},
-    id: "lk-xwlQIE",
-    children: [
-      {
-        tag: "v-text",
-        props: { content: "尾部", tag: "strong" },
-        id: "WfMegz70r"
-      }
-    ]
+    ],
+    style: { height: "100%" }
   }
 ];

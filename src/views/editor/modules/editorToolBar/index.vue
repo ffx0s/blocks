@@ -1,69 +1,59 @@
 <template>
-  <transition name="v-slide-top">
-    <div :class="$style.tools" v-show="isEdit">
-      <a-tooltip title="撤销" placement="bottom">
-        <a-button
-          class="ant-btn-icon-only"
-          :disabled="disableUndo"
-          @click="undo"
-        >
-          <my-icon type="icon-Undo" />
-        </a-button>
-      </a-tooltip>
-      <a-tooltip title="恢复" placement="bottom">
-        <a-button
-          class="ant-btn-icon-only"
-          :disabled="disableRedo"
-          @click="redo"
-        >
-          <my-icon type="icon-Redo" />
-        </a-button>
-      </a-tooltip>
-      <a-tooltip title="预览" placement="bottom">
-        <a-button icon="eye" @click="preview" />
-      </a-tooltip>
-      <a-tooltip title="清空画布" placement="bottom">
-        <a-button icon="delete" @click="cleanCanvas" />
-      </a-tooltip>
-      <a-tooltip title="源码" placement="bottom">
-        <a-button icon="code" @click="showCode" />
-      </a-tooltip>
-      <a-tooltip title="下载" placement="bottom">
-        <a-button icon="arrow-down" @click="download" />
-      </a-tooltip>
-      <a-tooltip title="导入" placement="bottom">
-        <a-button icon="import" class="ant-btn-icon-only">
-          <input
-            @change="onChange($event)"
-            type="file"
-            :class="$style.export"
-            accept=".html"
-          />
-        </a-button>
-      </a-tooltip>
+  <div :class="$style.tools">
+    <a-tooltip title="撤销" placement="bottom">
+      <a-button class="ant-btn-icon-only" :disabled="disableUndo" @click="undo">
+        <my-icon type="icon-Undo" />
+      </a-button>
+    </a-tooltip>
+    <a-tooltip title="恢复" placement="bottom">
+      <a-button class="ant-btn-icon-only" :disabled="disableRedo" @click="redo">
+        <my-icon type="icon-Redo" />
+      </a-button>
+    </a-tooltip>
+    <a-tooltip title="预览" placement="bottom">
+      <a-button icon="eye" @click="preview" />
+    </a-tooltip>
+    <a-tooltip title="清空画布" placement="bottom">
+      <a-button icon="delete" @click="cleanCanvas" />
+    </a-tooltip>
+    <a-tooltip title="源码" placement="bottom">
+      <a-button icon="code" @click="showCode" />
+    </a-tooltip>
+    <a-tooltip title="下载" placement="bottom">
+      <a-button icon="arrow-down" @click="download" />
+    </a-tooltip>
+    <a-tooltip title="导入" placement="bottom">
+      <a-button icon="import" class="ant-btn-icon-only">
+        <input
+          @change="onChange($event)"
+          type="file"
+          :class="$style.export"
+          accept=".html"
+        />
+      </a-button>
+    </a-tooltip>
 
-      <a-modal
-        centered
-        :width="820"
-        v-model="showCodeModal"
-        title=""
-        @cancel="cancelCodeModal"
-      >
-        <div slot="closeIcon"></div>
-        <div :class="$style.code">
-          <pre class="language-html"><code v-html="code" /></pre>
-        </div>
-        <div slot="footer">
-          <a-button @click="cancelCodeModal">关闭</a-button>
-          <a-button v-if="copyError" type="error">失败</a-button>
-          <a-button v-else-if="copySuccess" type="success">
-            <a-icon type="check" :style="{ color: '#52c41a' }" />已复制
-          </a-button>
-          <a-button v-else type="primary" @click="copyCode">复制</a-button>
-        </div>
-      </a-modal>
-    </div>
-  </transition>
+    <a-modal
+      centered
+      :width="820"
+      v-model="showCodeModal"
+      title=""
+      @cancel="cancelCodeModal"
+    >
+      <div slot="closeIcon"></div>
+      <div :class="$style.code">
+        <pre class="language-html"><code v-html="code" /></pre>
+      </div>
+      <div slot="footer">
+        <a-button @click="cancelCodeModal">关闭</a-button>
+        <a-button v-if="copyError" type="error">失败</a-button>
+        <a-button v-else-if="copySuccess" type="success">
+          <a-icon type="check" :style="{ color: '#52c41a' }" />已复制
+        </a-button>
+        <a-button v-else type="primary" @click="copyCode">复制</a-button>
+      </div>
+    </a-modal>
+  </div>
 </template>
 
 <script>

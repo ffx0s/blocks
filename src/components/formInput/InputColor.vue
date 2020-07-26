@@ -1,7 +1,15 @@
 <template>
-  <div @click="showColorPicker" :class="$style.pickerWrap">
-    <div :class="$style.color" :style="{ 'background-color': color }"></div>
-    <div :class="$style.backgroundImage" />
+  <div :class="$style.inputColor">
+    <div @click="showColorPicker" :class="$style.pickerWrap">
+      <div :class="$style.color" :style="{ 'background-color': color }"></div>
+      <div :class="$style.backgroundImage" />
+    </div>
+    <a-icon
+      :class="$style.clean"
+      type="delete"
+      title="清除颜色"
+      @click="clean"
+    />
   </div>
 </template>
 
@@ -53,15 +61,24 @@ export default {
           this.color = color;
         });
       };
+    },
+    clean() {
+      this.color = "";
+      this.$store.commit("editor/setColorPickerModal", { color: "" });
+      this.$emit("change", "");
     }
   }
 };
 </script>
 
 <style module>
+.inputColor {
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+}
 .pickerWrap {
   position: relative;
-  margin-top: 9px;
   width: 40px;
   height: 22px;
 }
@@ -76,5 +93,11 @@ export default {
   height: 100%;
   cursor: pointer;
   border: 1px solid #d9d9d9;
+}
+.clean {
+  margin-left: 10px;
+}
+.clean:hover {
+  color: #1890ff;
 }
 </style>

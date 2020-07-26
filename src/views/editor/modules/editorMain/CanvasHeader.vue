@@ -25,7 +25,7 @@
           >
             {{ device.name }}
           </a-menu-item>
-          <a-menu-item @click="setPosition({ w: 1100, h: 800 })">
+          <a-menu-item @click="setDefaultPosition">
             默认
           </a-menu-item>
         </a-menu>
@@ -74,8 +74,14 @@ export default {
     },
     setPosition(position) {
       const { w: pw } = this.$parent.parentPosition;
-      position.x = (pw - position.w) / 2;
+      if (position.w) {
+        position.x = (pw - position.w) / 2;
+      }
       this.$store.commit("editor/setPosition", position);
+    },
+    setDefaultPosition() {
+      const { w, h } = this.$parent.parentPosition;
+      this.setPosition({ w, h });
     },
     cancelPreview() {
       this.$store.commit("editor/setStatus", "EDIT");

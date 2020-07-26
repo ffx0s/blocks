@@ -6,7 +6,7 @@
     <a-form-item label="样式">
       <a-select
         size="small"
-        style="width: 80px"
+        style="width: 85px"
         :value="initialValues[1]"
         @change="handleStyleChange"
       >

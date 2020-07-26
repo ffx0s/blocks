@@ -3,6 +3,7 @@
     <a-input-search
       style="margin-bottom: 4px"
       placeholder="搜索节点"
+      :value="searchValue"
       @change="handleSearch"
     />
     <a-tree
@@ -11,6 +12,7 @@
       draggable
       :treeData="tree"
       :defaultExpandAll="true"
+      :selectedKeys="selectedKeys"
       :expandedKeys="expandedKeys"
       :autoExpandParent="autoExpandParent"
       @expand="handleExpand"
@@ -21,6 +23,7 @@
       <a-icon slot="switcherIcon" type="caret-down" />
       <template slot="item" slot-scope="{ title, key, isParentNode }">
         <span
+          :id="'tree-id-' + key"
           @mouseenter="handleMouseenter(key)"
           @mouseleave="handleMouseleave"
         >
@@ -56,6 +59,7 @@
 <script>
 import store from "@/store";
 import { Empty } from "ant-design-vue";
+import { findParent } from "@/editor/components";
 
 function transform(component) {
   const item = {
@@ -78,21 +82,6 @@ function transform(component) {
   return item;
 }
 
-function getParentKey(key, tree) {
-  let parentKey;
-  for (let i = 0; i < tree.length; i++) {
-    const node = tree[i];
-    if (node.children) {
-      if (node.children.some(item => item.key === key)) {
-        parentKey = node.key;
-      } else if (getParentKey(key, node.children)) {
-        parentKey = getParentKey(key, node.children);
-      }
-    }
-  }
-  return parentKey;
-}
-
 export default {
   props: {
     id: {
@@ -101,10 +90,13 @@ export default {
     },
     showAll: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   computed: {
+    editId() {
+      return store.state.editor.editId;
+    },
     tree() {
       let tree = [];
 
@@ -120,12 +112,32 @@ export default {
       return tree;
     }
   },
+  watch: {
+    editId: {
+      handler: function(id) {
+        if (id && this.isExpandedCurrentId) {
+          const [, , expandedKeys] = findParent(this.tree, id, [], {
+            id: "key"
+          });
+          this.expandedKeys = expandedKeys;
+          this.searchValue = "";
+          this.selectedKeys = [id];
+        } else {
+          this.selectedKeys = [];
+        }
+        this.isExpandedCurrentId = true;
+      },
+      immediate: true
+    }
+  },
   data() {
     return {
       expandedKeys: [],
+      selectedKeys: [],
       searchValue: "",
       autoExpandParent: true,
-      emptyImage: Empty.PRESENTED_IMAGE_SIMPLE
+      emptyImage: Empty.PRESENTED_IMAGE_SIMPLE,
+      isExpandedCurrentId: true
     };
   },
   methods: {
@@ -136,11 +148,11 @@ export default {
       store.commit("selectedLayer/hideLayer");
     },
     hendleAdd(id) {
-      store.commit("editor/setTabActiveKey", "add");
+      store.commit("editor/setLeftTabActiveKey", "add");
       store.commit("editor/setCreateParentId", id);
     },
     handleEdit(id) {
-      store.commit("editor/setTabActiveKey", "edit");
+      this.isExpandedCurrentId = false;
       store.commit("editor/setEditId", id);
     },
     handleCopy(id) {
@@ -173,16 +185,22 @@ export default {
     handleSearch(event) {
       const value = event.target.value;
       const treeMap = store.state.component.treeMap;
-      const parentKeys = [];
+      let expandedKeys = [];
 
-      for (const id in treeMap) {
+      for (let id in treeMap) {
         const current = treeMap[id];
-        if (current.tag.indexOf(value) > -1) {
-          parentKeys.push(getParentKey(id, this.tree));
+        if (
+          current.tag.indexOf(value) > -1 &&
+          expandedKeys.indexOf(id) === -1
+        ) {
+          const [, , idPath] = findParent(this.tree, id, [], {
+            id: "key"
+          });
+          expandedKeys = expandedKeys.concat(idPath);
         }
       }
 
-      const expandedKeys = parentKeys.filter(
+      expandedKeys = expandedKeys.filter(
         (item, i, self) => item && self.indexOf(item) === i
       );
 
